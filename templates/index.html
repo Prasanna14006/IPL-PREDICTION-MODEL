@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IPL Match Win Predictor</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script src="/static/script.js" defer></script>
+
+
+</head>
+<body>
+  <div class="container">
+    <h2>IPL Match Win Predictor</h2>
+    <form id="predictionForm">
+
+      <!-- Team 1 -->
+      <label for="team1">Team 1:</label>
+      <select id="team1" name="team1" required>
+        <option value="">Select Team</option>
+        <option value="CSK">Chennai Super Kings</option>
+        <option value="MI">Mumbai Indians</option>
+        <option value="RCB">Royal Challengers Bangalore</option>
+        <option value="KKR">Kolkata Knight Riders</option>
+        <option value="RR">Rajasthan Royals</option>
+        <option value="DC">Delhi Capitals</option>
+        <option value="PBKS">Punjab Kings</option>
+        <option value="SRH">Sunrisers Hyderabad</option>
+        <option value="GT">Gujarat Titans</option>
+        <option value="LSG">Lucknow Super Giants</option>
+      </select>
+
+
+      <!-- Team 2 -->
+      <label for="team2">Team 2:</label>
+      <select id="team2" name="team2" required>
+       <option value="">Select Team</option>
+       <option value="CSK">Chennai Super Kings</option>
+       <option value="MI">Mumbai Indians</option>
+       <option value="RCB">Royal Challengers Bangalore</option>
+       <option value="KKR">Kolkata Knight Riders</option>
+       <option value="RR">Rajasthan Royals</option>
+       <option value="DC">Delhi Capitals</option>
+       <option value="PBKS">Punjab Kings</option>
+       <option value="SRH">Sunrisers Hyderabad</option>
+       <option value="GT">Gujarat Titans</option>
+       <option value="LSG">Lucknow Super Giants</option>
+      </select>
+
+
+      <!-- Venue -->
+      <label for="venue">Venue:</label>
+      <select id="venue" name="venue" required>
+        <option value="">Select Venue</option>
+        <option value="Chennai">M. A. Chidambaram Stadium, Chennai</option>
+        <option value="Mumbai">Wankhede Stadium, Mumbai</option>
+        <option value="Bangalore">M. Chinnaswamy Stadium, Bangalore</option>
+        <option value="Kolkata">Eden Gardens, Kolkata</option>
+        <option value="Jaipur">Sawai Mansingh Stadium, Jaipur</option>
+        <option value="Delhi">Arun Jaitley Stadium, Delhi</option>
+        <option value="Mohali">PCA Stadium, Mohali</option>
+        <option value="Hyderabad">Rajiv Gandhi Intl. Stadium, Hyderabad</option>
+        <option value="Ahmedabad">Narendra Modi Stadium, Ahmedabad</option>
+        <option value="Lucknow">BRSABV Ekana Stadium, Lucknow</option>
+      </select>
+
+
+      <!-- Toss Winner -->
+      <label for="toss_winner">Toss Winner:</label>
+      <select id="toss_winner" name="toss_winner" required>
+        <option value="">Select Toss Winner</option>
+        <option value="CSK">Chennai Super Kings</option>
+        <option value="MI">Mumbai Indians</option>
+        <option value="RCB">Royal Challengers Bangalore</option>
+        <option value="KKR">Kolkata Knight Riders</option>
+        <option value="RR">Rajasthan Royals</option>
+        <option value="DC">Delhi Capitals</option>
+        <option value="PBKS">Punjab Kings</option>
+        <option value="SRH">Sunrisers Hyderabad</option>
+        <option value="GT">Gujarat Titans</option>
+        <option value="LSG">Lucknow Super Giants</option>
+      </select>
+
+      <!-- Toss Decision -->
+      <label for="toss_decision">Toss Decision:</label>
+      <select id="toss_decision" name="toss_decision" required>
+        <option value="">Select Decision</option>
+        <option value="bat">Bat</option>
+        <option value="field">Field</option>
+      </select>
+
+
+      <button type="submit">Predict Match Winner</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+  const form = document.getElementById("predictionForm");
+  const resultDiv = document.getElementById("result");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const data = {
+      team1: form.team1.value,
+      team2: form.team2.value,
+      venue: form.venue.value,
+      toss_winner: form.toss_winner.value,
+      toss_decision: form.toss_decision.value
+    };
+
+    resultDiv.innerText = "⏳ Predicting...";
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+
+      const result = await response.json();
+console.log(result);
+if ("winner" in result) {
+  resultDiv.innerText = ` Predicted Winner: ${result.winner}`;
+} else if ("error" in result) {
+  resultDiv.innerText = ` Error: ${result.error}`;
+} else {
+  resultDiv.innerText = " Unexpected response from server.";
+}
+
+    } catch (error) {
+      console.error("Fetch error:", error);
+      resultDiv.innerText = ` Request failed: ${error.message}`;
+    }
+  });
+</script>
+
+</body>
+</html>
